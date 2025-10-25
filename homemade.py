@@ -9,6 +9,7 @@ import random
 from lib.engine_wrapper import MinimalEngine
 from lib.lichess_types import MOVE, HOMEMADE_ARGS_TYPE
 import logging
+from collections import deque
 
 
 # Use this logger variable to print messages to the console or log files.
@@ -41,7 +42,7 @@ class MyBot(ExampleEngine):
         # NOTE: The sections below are intentionally simple to keep the example short.
         # They demonstrate the structure of a search but also highlight the engine's
         # weaknesses (fixed depth, naive time handling, no pruning, no quiescence, etc.).
-        print(dir(board))
+        print(board)
         # --- very simple time-based depth selection (naive) ---
         # Expect args to be (time_limit: Limit, ponder: bool, draw_offered: bool, root_moves: MOVE)
         time_limit = args[0] if (args and isinstance(args[0], Limit)) else None
@@ -106,11 +107,19 @@ class MyBot(ExampleEngine):
         def traverseTree(b: chess.Board, depth: int, maximizing: bool, alpha, beta) -> int:
             if depth == 0 or b.is_game_over():
                 return evaluate(b)            
-            
+            scored_moves=deque([])
             if maximizing:
                 best = -10**12
                 for m in b.legal_moves:
                     b.push(m)
+                    strength =evaluate(b)
+                    if scored_moves.count==0 or scored_moves.pop[1]>strength:
+                        scored_moves.append([m, strength])
+                    else:
+                        scored_moves.appendleft([m,strength])    
+                    b.pop()
+                for m in scored_moves: 
+                    b.push(m[0])   
                     val = traverseTree(b, depth - 1, False)
                     b.pop()
                     if val > best:
@@ -124,6 +133,14 @@ class MyBot(ExampleEngine):
                 best = 10**12
                 for m in b.legal_moves:
                     b.push(m)
+                    strength =evaluate(b)
+                    if scored_moves.count==0 or scored_moves.pop[1]<strength:
+                        scored_moves.append([m, strength])
+                    else:
+                        scored_moves.appendleft([m,strength])    
+                    b.pop()
+                for m in scored_moves: 
+                    b.push(m[0])  
                     val = traverseTree(b, depth - 1, True)
                     b.pop()
                     if val < best:

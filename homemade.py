@@ -68,15 +68,15 @@ class MyBot(ExampleEngine):
         inc = my_inc if isinstance(my_inc, (int, float)) else 0
         budget = (remaining or 0) + 2 * inc  # crude increment bonus
         if remaining is None:
-            total_depth = 2
+            total_depth = 3
         elif budget >= 60:
-            total_depth = 2
+            total_depth = 3
         elif budget >= 20:
-            total_depth = 2
+            total_depth = 3
         elif budget >= 5:
-            total_depth = 2
+            total_depth = 3
         else:
-            total_depth = 2
+            total_depth = 3
         total_depth = max(1, int(total_depth))
 
               # up to what I've done before
@@ -150,16 +150,10 @@ class MyBot(ExampleEngine):
             if maximizing: 
                 if val > best_eval:
                     best_eval, best_move = val, m
-                if val > alpha:
-                    alpha=val    
             elif not maximizing: 
                 if val < best_eval:
                     best_eval, best_move = val, m
-                if val < beta:
-                    beta=val    
-
-            if beta<=alpha:
-                return best_eval, m
+            
 
         # Fallback in rare cases (shouldn't trigger)
         print(best_eval, best_move, vals)

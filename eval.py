@@ -12,7 +12,7 @@ def get_material_values(b: chess.Board) -> int:
         chess.BISHOP: 330,
         chess.ROOK: 500,
         chess.QUEEN: 900,
-        chess.KING: 0,  # king material ignored (checkmates handled above)
+        chess.KING: 2000,  # king material ignored (checkmates handled above)
     }
 
     #get number of pieces in the board of each type for white
@@ -21,7 +21,7 @@ def get_material_values(b: chess.Board) -> int:
     nwk = len(b.pieces(chess.KNIGHT, chess.WHITE))
     nwb = len(b.pieces(chess.BISHOP, chess.WHITE))
     nwq = len(b.pieces(chess.QUEEN, chess.WHITE))
-    nwk = len(b.pieces(chess.KING, chess.WHITE))
+    nwking = len(b.pieces(chess.KING, chess.WHITE))
 
     #get number of pieces in the board of each type for black
     nbp = len(b.pieces(chess.PAWN, chess.BLACK))
@@ -29,7 +29,7 @@ def get_material_values(b: chess.Board) -> int:
     nbk = len(b.pieces(chess.KNIGHT, chess.BLACK))
     nbb = len(b.pieces(chess.BISHOP, chess.BLACK))
     nbq = len(b.pieces(chess.QUEEN, chess.BLACK))
-    nbk = len(b.pieces(chess.KING, chess.BLACK))
+    nbking = len(b.pieces(chess.KING, chess.BLACK))
 
 
     #get the final value for each piece
@@ -39,7 +39,7 @@ def get_material_values(b: chess.Board) -> int:
     wkw = nwk * values[chess.KNIGHT] #knight
     wbw = nwb * values[chess.BISHOP] #bishop
     wqw = nwq * values[chess.QUEEN] #queen
-    wkw = nwk * values[chess.KING] #King
+    wkingw = nwking * values[chess.KING] #King
 
     #blacks
     bpw = nbp * values[chess.PAWN] #pawn
@@ -47,12 +47,12 @@ def get_material_values(b: chess.Board) -> int:
     bkw = nbk * values[chess.KNIGHT] #knight
     bbw = nbb * values[chess.BISHOP] #bishop
     bqw = nbq * values[chess.QUEEN] #queen
-    bkw = nbk * values[chess.KING] #King
+    bkingw = nbking * values[chess.KING] #King
 
 
     # add all the values
-    white_material = wpw + wrw + wkw + wbw + wqw + wkw 
-    black_material = bpw + brw + bkw + bbw + bqw + bkw
+    white_material = wpw + wrw + wkw + wbw + wqw + wkingw 
+    black_material = bpw + brw + bkw + bbw + bqw + bkingw
     total_material = white_material - black_material
     
     #print(total_material, black_material, white_material)

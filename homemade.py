@@ -12,6 +12,8 @@ import logging
 from collections import deque
 import positions
 import eval
+import time
+
 
 # Use this logger variable to print messages to the console or log files.
 # logger.info("message") will always print "message" to the console or log file.
@@ -69,22 +71,15 @@ class MyBot(ExampleEngine):
         remaining = my_time if isinstance(my_time, (int, float)) else None
         inc = my_inc if isinstance(my_inc, (int, float)) else 0
         budget = (remaining or 0) + 2 * inc  # crude increment bonus
-        if remaining is None:
-            total_depth = 3
-        elif budget >= 60:
-            total_depth = 3
-        elif budget >= 20:
-            total_depth = 3
-        elif budget >= 5:
-            total_depth = 3
-        else:
-            total_depth = 3
-        total_depth = max(1, int(total_depth))
+        total_depth = 4
+        startTime=time.time()
 
         # up to what I've done before
         # start with iterative deepening - mostly there with pv move ordering
         # move onto transposition table
         def traverseTree(b: chess.Board, depth: int, maximizing: bool, alpha, beta) -> int:
+            if(depth<2 and time.time()-startTime>4):
+                depth=0
             if depth == 0 or b.is_game_over():
                 return eval.evaluate(b)   
             scored_moves=[]

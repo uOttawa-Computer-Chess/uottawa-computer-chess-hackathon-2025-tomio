@@ -42,7 +42,6 @@ class MyBot(ExampleEngine):
         # NOTE: The sections below are intentionally simple to keep the example short.
         # They demonstrate the structure of a search but also highlight the engine's
         # weaknesses (fixed depth, naive time handling, no pruning, no quiescence, etc.).
-        print(board)
         # --- very simple time-based depth selection (naive) ---
         # Expect args to be (time_limit: Limit, ponder: bool, draw_offered: bool, root_moves: MOVE)
         time_limit = args[0] if (args and isinstance(args[0], Limit)) else None
@@ -68,15 +67,15 @@ class MyBot(ExampleEngine):
         inc = my_inc if isinstance(my_inc, (int, float)) else 0
         budget = (remaining or 0) + 2 * inc  # crude increment bonus
         if remaining is None:
-            total_depth = 1
+            total_depth = 5
         elif budget >= 60:
-            total_depth = 1
+            total_depth = 5
         elif budget >= 20:
-            total_depth = 1
+            total_depth = 5
         elif budget >= 5:
-            total_depth = 1
+            total_depth = 5
         else:
-            total_depth = 1
+            total_depth = 5
         total_depth = max(1, int(total_depth))
 
         # --- simple material evaluator (White-positive score) ---

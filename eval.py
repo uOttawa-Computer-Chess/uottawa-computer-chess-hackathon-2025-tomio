@@ -57,7 +57,76 @@ def get_material_values(b: chess.Board) -> int:
     
     #print(total_material, black_material, white_material)
 
-    return total_material
+    return total_material, white_material, black_material
+
+#Just to check if there is some sort of structure(not the structure itself)
+def pawn_structure(b: chess.Board):
+    val = 0
+
+
+    #Iterate for both color
+    for color in [chess.WHITE, chess.BLACK]:
+        multiplier = 1
+
+        if not color:
+            multiplier = -1
+
+        
+        #get position of pawns
+        pawns = b.pieces(chess.PAWN, color)
+
+        #check each line for isolated pawns
+        for col in range(8):
+
+
+            pawns_col = sum(1 for p in pawns if chess.square_file(p) == col)#file is column and row is rank
+            if (pawns_col > 0):
+                #there are pawns in the column check adjacent columns
+
+                adj_pawns = sum(1 for p in pawns if chess.square_file(p) in [col-1, col+1])
+
+                #if we dont have adjacent pawns means that we dont have structure
+                if adj_pawns < 0:
+                    val -= 20 * multiplier# isolated pawn penalty
+            
+            if (pawns_col > 1):
+                val -= 10 * multiplier# penalty for when we have two pawn in the same column
+    
+    return val
+
+def king_safety(b: chess.Board)-> int:
+    val = 0
+
+    #evaluate both colors
+    for color in [chess.WHITE, chess.BLACK]:
+        multiplier = 1
+        if not color:
+            multiplier = -1
+
+        #get the square of the king
+        king_sq = b.king(color)
+        
+
+        #get the king file
+        k_file = chess.square_file(king_sq)
+        #get the king rank
+        k_rank = chess.square_rank(king_sq)
+
+
+        #check pawn shield
+        shield_score = 0
+        for f in range(max(0, k_file -1), min(8, k_file + 2)):
+            shield_rank = k_rank + multiplier
+            shield_sq = chess.square(f, shield_rank)
+
+            if(b.piece_at(shield_sq) == chess.Piece(chess.PAWN, color)):
+                shield_score += 10
+        
+        val += shield_score * multiplier
+        
+
+        
+    return val
 
 
 def get_evaluation(b: chess.Board) -> int:
@@ -68,8 +137,9 @@ def get_evaluation(b: chess.Board) -> int:
             return 0  # draw
         return 10_000_000 if outcome.winner is chess.WHITE else -10_000_000
     
+    
     #get material
-    total_material = get_material_values(b)
+    total_material, white_value, black_value = get_material_values(b)
 
     #get the values for each piece(value of white - value of black)
     #pawns
@@ -88,6 +158,13 @@ def get_evaluation(b: chess.Board) -> int:
     bishop_value = sum([positions.bishopTable[index] for index in b.pieces(chess.BISHOP, chess.WHITE)])
     bishop_value = bishop_value + sum([-positions.bishopTable[chess.square_mirror(index)] for index in b.pieces(chess.BISHOP, chess.BLACK)])
 
+
+    #bishop pair extra value(two bishops is good combination)
+    if (len(b.pieces(chess.BISHOP, chess.WHITE))):
+        bishop_value += 50
+    if (len(b.pieces(chess.BISHOP, chess.WHITE))):
+        bishop_value -= 50
+
     #queen
     queen_value = sum([positions.queenTable[index] for index in b.pieces(chess.QUEEN, chess.WHITE)])
     queen_value = queen_value + sum([-positions.queenTable[chess.square_mirror(index)] for index in b.pieces(chess.QUEEN, chess.BLACK)])
@@ -96,8 +173,16 @@ def get_evaluation(b: chess.Board) -> int:
     king_value = sum([positions.kingTable[index] for index in b.pieces(chess.KING, chess.WHITE)])
     king_value = king_value + sum([-positions.kingTable[chess.square_mirror(index)] for index in b.pieces(chess.KING, chess.BLACK)])
 
+
+
+    #evaluate pawn structure
+    p_s_score = pawn_structure(b)
+
+    #evaluate king safety
+    k_s_score = king_safety(b)
+
     #print(total_material, pawn_value, rook_value, knight_value,  bishop_value , queen_value , king_value)
-    eval_value = total_material + pawn_value + rook_value + knight_value + bishop_value + queen_value + king_value
+    eval_value = total_material + pawn_value + rook_value + knight_value + bishop_value + queen_value + king_value + p_s_score + k_s_score
 
     return eval_value
     

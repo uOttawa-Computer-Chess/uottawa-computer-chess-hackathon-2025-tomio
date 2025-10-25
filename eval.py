@@ -187,6 +187,25 @@ def get_evaluation(b: chess.Board) -> int:
     return eval_value
     
 
+def num_pieces(b: chess.Board):
+    num_whites = len(b.pieces(chess.PAWN, chess.WHITE))
+    num_whites += len(b.pieces(chess.ROOK, chess.WHITE))
+    num_whites += len(b.pieces(chess.BISHOP, chess.WHITE))
+    num_whites += len(b.pieces(chess.KNIGHT, chess.WHITE))
+    num_whites += len(b.pieces(chess.QUEEN, chess.WHITE))
+    num_whites += len(b.pieces(chess.KING, chess.WHITE))
+
+    num_black = len(b.pieces(chess.PAWN, chess.BLACK))
+    num_black += len(b.pieces(chess.ROOK, chess.BLACK))
+    num_black += len(b.pieces(chess.BISHOP, chess.BLACK))
+    num_black += len(b.pieces(chess.KNIGHT, chess.BLACK))
+    num_black += len(b.pieces(chess.QUEEN, chess.BLACK))
+    num_black += len(b.pieces(chess.KING, chess.BLACK))
+
+
+    return num_whites + num_black
+
+
 def evaluate(b: chess.Board) -> int:
             # Large score for terminal outcomes
             if b.is_game_over():

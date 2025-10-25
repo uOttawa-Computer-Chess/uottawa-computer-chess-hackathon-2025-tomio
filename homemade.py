@@ -39,6 +39,8 @@ class MyBot(ExampleEngine):
     transposition table, and a richer evaluator to make it competitive.
     """
 
+    
+
     def search(self, board: chess.Board, *args: HOMEMADE_ARGS_TYPE) -> PlayResult:
         # NOTE: The sections below are intentionally simple to keep the example short.
         # They demonstrate the structure of a search but also highlight the engine's
@@ -79,23 +81,21 @@ class MyBot(ExampleEngine):
             total_depth = 3
         total_depth = max(1, int(total_depth))
 
-              # up to what I've done before
+        # up to what I've done before
         # start with iterative deepening - mostly there with pv move ordering
         # move onto transposition table
         def traverseTree(b: chess.Board, depth: int, maximizing: bool, alpha, beta) -> int:
             if depth == 0 or b.is_game_over():
                 return eval.evaluate(b)   
-            scored_moves=deque([])
+            scored_moves=[]
             if maximizing:
                 best = -10**12
                 for m in b.legal_moves:
                     b.push(m)
-                    strength =eval.evaluate(b)
-                    if len(scored_moves)==0 or scored_moves[0][1]<strength:
-                        scored_moves.append([m, strength])
-                    else:
-                        scored_moves.appendleft([m,strength])    
+                    strength = eval.evaluate(b)
                     b.pop()
+                    scored_moves.append((m, strength))
+                scored_moves.sort(key=lambda x: x[1], reverse=True)
                 for m in scored_moves: 
                     b.push(m[0])   
                     val = traverseTree(b, depth - 1, False, alpha, beta)
@@ -112,11 +112,9 @@ class MyBot(ExampleEngine):
                 for m in b.legal_moves:
                     b.push(m)
                     strength = eval.evaluate(b)
-                    if len(scored_moves)==0 or scored_moves[0][1]>strength:
-                        scored_moves.append([m, strength])
-                    else:
-                        scored_moves.appendleft([m,strength])    
                     b.pop()
+                    scored_moves.append((m, strength))
+                scored_moves.sort(key=lambda x: x[1], reverse=True)
                 for m in scored_moves: 
                     b.push(m[0])  
                     val = traverseTree(b, depth - 1, True, alpha, beta)

@@ -67,15 +67,15 @@ class MyBot(ExampleEngine):
         inc = my_inc if isinstance(my_inc, (int, float)) else 0
         budget = (remaining or 0) + 2 * inc  # crude increment bonus
         if remaining is None:
-            total_depth = 5
+            total_depth = 3
         elif budget >= 60:
-            total_depth = 5
+            total_depth = 3
         elif budget >= 20:
-            total_depth = 5
+            total_depth = 3
         elif budget >= 5:
-            total_depth = 5
+            total_depth = 3
         else:
-            total_depth = 5
+            total_depth = 3
         total_depth = max(1, int(total_depth))
 
         # --- simple material evaluator (White-positive score) ---
@@ -105,14 +105,15 @@ class MyBot(ExampleEngine):
         # move onto transposition table
         def traverseTree(b: chess.Board, depth: int, maximizing: bool, alpha, beta) -> int:
             if depth == 0 or b.is_game_over():
-                return evaluate(b)            
+                return evaluate(b)  
+            print("here2")          
             scored_moves=deque([])
             if maximizing:
                 best = -10**12
                 for m in b.legal_moves:
                     b.push(m)
                     strength =evaluate(b)
-                    if scored_moves.count==0 or scored_moves.pop[1]>strength:
+                    if len(scored_moves)==0 or scored_moves[0][1]<strength:
                         scored_moves.append([m, strength])
                     else:
                         scored_moves.appendleft([m,strength])    
@@ -126,14 +127,16 @@ class MyBot(ExampleEngine):
                     if val > alpha:
                         alpha=val   
                     if(beta<=alpha):
-                        return best     
+                        return best 
+                print(best)        
                 return best
             else:
+                print("here3")
                 best = 10**12
                 for m in b.legal_moves:
                     b.push(m)
                     strength =evaluate(b)
-                    if scored_moves.count==0 or scored_moves.pop[1]<strength:
+                    if len(scored_moves)==0 or scored_moves[0][1]>strength:
                         scored_moves.append([m, strength])
                     else:
                         scored_moves.appendleft([m,strength])    
@@ -148,6 +151,7 @@ class MyBot(ExampleEngine):
                         beta=val    
                     if(beta<=alpha):
                         return best    
+                print("here4")    
                 return best
 
         # --- root move selection ---
@@ -165,6 +169,7 @@ class MyBot(ExampleEngine):
         # Lookahead depth chosen by the simple time heuristic; subtract one for the root move
         for m in legal:
             board.push(m)
+            print("here")
             val = traverseTree(board, total_depth - 1, not maximizing, alpha, beta)
             board.pop()
 

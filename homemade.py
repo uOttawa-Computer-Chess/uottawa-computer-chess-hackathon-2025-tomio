@@ -66,15 +66,15 @@ class MyBot(ExampleEngine):
         inc = my_inc if isinstance(my_inc, (int, float)) else 0
         budget = (remaining or 0) + 2 * inc  # crude increment bonus
         if remaining is None:
-            total_depth = 3
+            total_depth = 5
         elif budget >= 60:
-            total_depth = 3
+            total_depth = 5
         elif budget >= 20:
-            total_depth = 3
+            total_depth = 5
         elif budget >= 5:
-            total_depth = 3
+            total_depth = 5
         else:
-            total_depth = 3
+            total_depth = 5
         total_depth = max(1, int(total_depth))
 
         # --- simple material evaluator (White-positive score) ---

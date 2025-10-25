@@ -29,8 +29,8 @@ class MyBot(ExampleEngine):
 
     Key limitations:
     - Fixed-depth search with only a very naive time-to-depth mapping (no true time management).
-    - No iterative deepening: the engine does not progressively deepen and use PV-based ordering.
-    - No move ordering or capture heuristics: moves are searched in arbitrary order.
+    - x No iterative deepening: the engine does not progressively deepen and use PV-based ordering.
+    - x half No move ordering or capture heuristics: moves are searched in arbitrary order.
     - No transposition table or caching: repeated positions are re-searched.
     - Evaluation is material-only and very simplistic; positional factors are ignored.
 
@@ -67,15 +67,15 @@ class MyBot(ExampleEngine):
         inc = my_inc if isinstance(my_inc, (int, float)) else 0
         budget = (remaining or 0) + 2 * inc  # crude increment bonus
         if remaining is None:
-            total_depth = 3
+            total_depth = 5
         elif budget >= 60:
-            total_depth = 3
+            total_depth = 5
         elif budget >= 20:
-            total_depth = 3
+            total_depth = 5
         elif budget >= 5:
-            total_depth = 3
+            total_depth = 5
         else:
-            total_depth = 3
+            total_depth = 5
         total_depth = max(1, int(total_depth))
 
         # --- simple material evaluator (White-positive score) ---
@@ -101,12 +101,11 @@ class MyBot(ExampleEngine):
             return score
 
         # up to what I've done before
-        # start with iterative deepening
+        # start with iterative deepening - mostly there with pv move ordering
         # move onto transposition table
         def traverseTree(b: chess.Board, depth: int, maximizing: bool, alpha, beta) -> int:
             if depth == 0 or b.is_game_over():
-                return evaluate(b)  
-            print("here2")          
+                return evaluate(b)   
             scored_moves=deque([])
             if maximizing:
                 best = -10**12
@@ -128,10 +127,8 @@ class MyBot(ExampleEngine):
                         alpha=val   
                     if(beta<=alpha):
                         return best 
-                print(best)        
                 return best
             else:
-                print("here3")
                 best = 10**12
                 for m in b.legal_moves:
                     b.push(m)
@@ -150,8 +147,7 @@ class MyBot(ExampleEngine):
                     if val < beta:
                         beta=val    
                     if(beta<=alpha):
-                        return best    
-                print("here4")    
+                        return best 
                 return best
 
         # --- root move selection ---
@@ -169,7 +165,6 @@ class MyBot(ExampleEngine):
         # Lookahead depth chosen by the simple time heuristic; subtract one for the root move
         for m in legal:
             board.push(m)
-            print("here")
             val = traverseTree(board, total_depth - 1, not maximizing, alpha, beta)
             board.pop()
 

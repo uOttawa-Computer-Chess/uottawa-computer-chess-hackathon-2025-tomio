@@ -10,7 +10,8 @@ from lib.engine_wrapper import MinimalEngine
 from lib.lichess_types import MOVE, HOMEMADE_ARGS_TYPE
 import logging
 from collections import deque
-
+import positions
+import eval
 
 # Use this logger variable to print messages to the console or log files.
 # logger.info("message") will always print "message" to the console or log file.
@@ -67,51 +68,29 @@ class MyBot(ExampleEngine):
         inc = my_inc if isinstance(my_inc, (int, float)) else 0
         budget = (remaining or 0) + 2 * inc  # crude increment bonus
         if remaining is None:
-            total_depth = 5
+            total_depth = 3
         elif budget >= 60:
-            total_depth = 5
+            total_depth = 3
         elif budget >= 20:
-            total_depth = 5
+            total_depth = 3
         elif budget >= 5:
-            total_depth = 5
+            total_depth = 3
         else:
-            total_depth = 5
+            total_depth = 3
         total_depth = max(1, int(total_depth))
 
-        # --- simple material evaluator (White-positive score) ---
-        def evaluate(b: chess.Board) -> int:
-            # Large score for terminal outcomes
-            if b.is_game_over():
-                outcome = b.outcome()
-                if outcome is None or outcome.winner is None:
-                    return 0  # draw
-                return 10_000_000 if outcome.winner is chess.WHITE else -10_000_000
-
-            values = {
-                chess.PAWN: 100,
-                chess.KNIGHT: 320,
-                chess.BISHOP: 330,
-                chess.ROOK: 500,
-                chess.QUEEN: 900,
-                chess.KING: 0,  # king material ignored (checkmates handled above)
-            }
-            score = 0
-            for pt, v in values.items():
-                score += v * (len(b.pieces(pt, chess.WHITE)) - len(b.pieces(pt, chess.BLACK)))
-            return score
-
-        # up to what I've done before
+              # up to what I've done before
         # start with iterative deepening - mostly there with pv move ordering
         # move onto transposition table
         def traverseTree(b: chess.Board, depth: int, maximizing: bool, alpha, beta) -> int:
             if depth == 0 or b.is_game_over():
-                return evaluate(b)   
+                return eval.evaluate(b)   
             scored_moves=deque([])
             if maximizing:
                 best = -10**12
                 for m in b.legal_moves:
                     b.push(m)
-                    strength =evaluate(b)
+                    strength =eval.evaluate(b)
                     if len(scored_moves)==0 or scored_moves[0][1]<strength:
                         scored_moves.append([m, strength])
                     else:
@@ -132,7 +111,7 @@ class MyBot(ExampleEngine):
                 best = 10**12
                 for m in b.legal_moves:
                     b.push(m)
-                    strength =evaluate(b)
+                    strength = eval.evaluate(b)
                     if len(scored_moves)==0 or scored_moves[0][1]>strength:
                         scored_moves.append([m, strength])
                     else:

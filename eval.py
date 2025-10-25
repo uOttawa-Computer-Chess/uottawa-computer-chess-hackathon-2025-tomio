@@ -53,8 +53,10 @@ def get_material_values(b: chess.Board) -> int:
     # add all the values
     white_material = wpw + wrw + wkw + wbw + wqw + wkw 
     black_material = bpw + brw + bkw + bbw + bqw + bkw
-    total_material = white_material + black_material
+    total_material = white_material - black_material
     
+    #print(total_material, black_material, white_material)
+
     return total_material
 
 
@@ -94,7 +96,7 @@ def get_evaluation(b: chess.Board) -> int:
     king_value = sum([positions.kingTable[index] for index in b.pieces(chess.KING, chess.WHITE)])
     king_value = king_value + sum([-positions.kingTable[chess.square_mirror(index)] for index in b.pieces(chess.KING, chess.BLACK)])
 
-
+    print(total_material, pawn_value, rook_value, knight_value,  bishop_value , queen_value , king_value)
     eval_value = total_material + pawn_value + rook_value + knight_value + bishop_value + queen_value + king_value
 
     return eval_value

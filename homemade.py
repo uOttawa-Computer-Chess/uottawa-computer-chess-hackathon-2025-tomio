@@ -66,15 +66,15 @@ class MyBot(ExampleEngine):
         inc = my_inc if isinstance(my_inc, (int, float)) else 0
         budget = (remaining or 0) + 2 * inc  # crude increment bonus
         if remaining is None:
-            total_depth = 2
+            total_depth = 3
         elif budget >= 60:
-            total_depth = 2
+            total_depth = 3
         elif budget >= 20:
-            total_depth = 2
+            total_depth = 3
         elif budget >= 5:
-            total_depth = 2
+            total_depth = 3
         else:
-            total_depth = 2
+            total_depth = 3
         total_depth = max(1, int(total_depth))
 
         # --- simple material evaluator (White-positive score) ---
@@ -110,7 +110,7 @@ class MyBot(ExampleEngine):
                 best = -10**12
                 for m in b.legal_moves:
                     b.push(m)
-                    val = traverseTree(b, depth - 1, False)
+                    val = traverseTree(b, depth - 1, False, alpha, beta)
                     b.pop()
                     if val > best:
                         best = val
@@ -123,7 +123,7 @@ class MyBot(ExampleEngine):
                 best = 10**12
                 for m in b.legal_moves:
                     b.push(m)
-                    val = traverseTree(b, depth - 1, True)
+                    val = traverseTree(b, depth - 1, True, alpha, beta)
                     b.pop()
                     if val < best:
                         best = val

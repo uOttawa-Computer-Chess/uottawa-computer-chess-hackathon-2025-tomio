@@ -72,10 +72,10 @@ class MyBot(ExampleEngine):
         inc = my_inc if isinstance(my_inc, (int, float)) else 0
         budget = (remaining or 0) + 2 * inc  # crude increment bonus
         total_depth = 4
-        if(eval.num_pieces(board)<20):
-            total_depth=5
-        if(eval.num_pieces(board)<10):
-            total_depth=6    
+        if(eval.num_pieces(board)<7):
+            total_depth=5 
+        if(remaining<10):
+            total_depth=3    
         startTime=time.time()
 
         # up to what I've done before

@@ -119,7 +119,7 @@ class MyBot(ExampleEngine):
                     b.pop()
                 for m in scored_moves: 
                     b.push(m[0])   
-                    val = traverseTree(b, depth - 1, False)
+                    val = traverseTree(b, depth - 1, False, alpha, beta)
                     b.pop()
                     if val > best:
                         best = val
@@ -140,7 +140,7 @@ class MyBot(ExampleEngine):
                     b.pop()
                 for m in scored_moves: 
                     b.push(m[0])  
-                    val = traverseTree(b, depth - 1, True)
+                    val = traverseTree(b, depth - 1, True, alpha, beta)
                     b.pop()
                     if val < best:
                         best = val
